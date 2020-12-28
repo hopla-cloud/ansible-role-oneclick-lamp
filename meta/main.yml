@@ -1,0 +1,26 @@
+galaxy_info:
+  role_name: oneclick_lamp
+  author: Joffrey Skandera
+  description: Hopla.cloud role for ansible to install lamp
+  company: hopla.cloud
+
+  license: GPLv3
+
+  min_ansible_version: 2.8
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+
+  galaxy_tags:
+    - lamp
+
+dependencies:
+    - hoplacloud.linux_update
+    - hoplacloud.linux_motd
+    - hoplacloud.linuxbase
+    - hoplacloud.fail2ban
+    - hoplacloud.postfix
+    - hoplacloud.apache_php
+    - geerlingguy.mysql

@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  remote_user: root
+  pre_tasks:
+    - name: Add mariadb Repository Key for Ubuntu 20.04
+      shell: "apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 F1656F24C74CD1D8"
+      when: "'mariadb-server' in mysql_packages and 'focal' in ansible_distribution_release"
+
+    - name: Add mariadb 10.5 Repository Ubuntu 20.04
+      apt_repository:
+        repo: "deb http://ftp.igh.cnrs.fr/pub/mariadb/repo/10.5/ubuntu focal main"
+        state: present
+        filename: MariaDB
+      when: "'mariadb-server' in mysql_packages and 'focal' in ansible_distribution_release"
+
+    - name: Set fact for python mysql Ubuntu 20.04
+      set_fact:
+        mysql_python_package_debian:
+          - python3-mysqldb
+          - python3-pymysql
+      when: "'mariadb-server' in mysql_packages and 'focal' in ansible_distribution_release"
+    - name: Init vars
+      set_fact:
+        db_root_password: "{{ lookup('password', '/dev/null length=16 chars=ascii_letters,digits,hexdigits') }}"
+  vars:
+    user_name: ubuntu
+    mysql_packages:
+      - mariadb-client
+      - mariadb-server
+    mysql_root_username: root
+    mysql_root_password: "{{ db_root_password }}"
+  roles:
+    - hoplacloud.oneclick_lamp

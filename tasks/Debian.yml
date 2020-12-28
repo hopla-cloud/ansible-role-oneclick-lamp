@@ -1,0 +1,40 @@
+---
+# tasks file for hoplacloud.lamp
+
+- name: Ensure root password is allowed in SSH
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#PermitRootLogin'
+    line: "PermitRootLogin yes"
+
+- name: restart service ssh
+  systemd:
+    state: restarted
+    name: ssh
+
+- name: Set root user password
+  mysql_user:
+    name: root
+    host : "%"
+    password: "{{ db_root_password }}"
+    login_user: root
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    priv: '*.*:ALL,GRANT'
+    state: present
+
+- name: Log variables to file
+  template:
+    src: logs.j2
+    dest: /root/Oneclick-wp-{{ ansible_date_time.date }}-{{ ansible_date_time.time }}.txt
+    owner: root
+    group: root
+
+- name: Sending end of provisionning Email to user
+  mail:
+    host: localhost
+    port: 25
+    to: "{{ user_email }}"
+    subject: "Hopla 👏 Votre {{ app_name }} vous attend sur hopla.cloud !"
+    subtype: "html"
+    secure: "never"
+    body: "{{ lookup('template', 'mail.j2') }}"

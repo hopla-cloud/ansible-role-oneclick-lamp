@@ -1,0 +1,5 @@
+---
+# handlers file for hoplacloud.oneclick_lamp
+- name: Display root password in case of mail delivery failure
+  debug:
+    msg: root password is {{ root_password }}
